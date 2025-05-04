@@ -1,0 +1,12 @@
+.scene {
+  width: 100%;
+  height: 90svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.canvas {
+  width: 400px;
+  height: 400px;
+}
