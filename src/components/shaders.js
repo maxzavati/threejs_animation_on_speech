@@ -54,7 +54,8 @@ const fragmentShader = `
     color = mix(color, uColor3, smoothstep(0.5, 0.8, blob));
 
     // White foam where audio is intense
-    float foamMask = smoothstep(0.75, 0.95, blob) * uAudioLevel;
+    // float foamMask = smoothstep(0.75, 0.95, blob) * uAudioLevel;
+    float foamMask = smoothstep(0.6, 0.85, blob) * (0.3 + pow(uAudioLevel, 0.8) * 1.2);
     color = mix(color, uFoam, foamMask);
 
     // Remove foggy fade: full alpha

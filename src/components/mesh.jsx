@@ -1,11 +1,10 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-
 import { meshShaders } from './shaders';
 
 export function MeshAnimation({ audioData }) {
-  const meshRef = useRef();
+  const meshRef = useRef(null);
   const prevAudioLevel = useRef(0);
   const audioHistory = useRef(new Array(10).fill(0));
   const time = useRef(0);
@@ -13,14 +12,22 @@ export function MeshAnimation({ audioData }) {
   const shaderObject = meshShaders({ audioHistory });
 
   useFrame((_, delta) => {
-    if (!audioData || !meshRef.current) return;
+    if (!meshRef.current) return;
 
-    let sum = 0;
-    for (let i = 0; i < audioData.frequencyData.length; i++) {
-      sum += audioData.frequencyData[i];
+    let normalizedLevel = 0;
+    if (audioData?.frequencyData?.length) {
+      let sum = 0;
+      for (let i = 0; i < audioData.frequencyData.length; i++) {
+        sum += audioData.frequencyData[i];
+      }
+      normalizedLevel = Math.min(
+        sum / audioData.frequencyData.length / 255,
+        1.0
+      );
+    } else {
+      // Idle mode: oscillate softly when no audio input
+      normalizedLevel = (Math.sin(time.current * 0.1) + 1) * 0.01;
     }
-    const avgVolume = sum / audioData.frequencyData.length;
-    const normalizedLevel = Math.min(avgVolume / 255, 1.0);
 
     const smoothedLevel = THREE.MathUtils.lerp(
       prevAudioLevel.current,
